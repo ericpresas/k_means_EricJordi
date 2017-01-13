@@ -12,7 +12,6 @@ figure('name','Scatter Plot')
 a = 40;
 b = 60;
 Percent_test = floor((b-a).*rand(1,1) + a)/100;
-stop=[0 0 ; 0 0];
 
 %Number features for test and train (for each cluster)
 num_feat_test=floor(num_feat*Percent_test);
