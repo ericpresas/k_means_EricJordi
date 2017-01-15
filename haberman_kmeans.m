@@ -15,7 +15,7 @@ for i=1:n_samples
     if (splited_observation{4}=='positive')
       dataset(i,4) = 1;
     else
-      dataset(i,4) = -1;
+      dataset(i,4) = 2;
     end
     for j=1:n_features
         dataset(i,j) = str2double(splited_observation{1,j});
@@ -60,8 +60,11 @@ for i=1:n_clusters
     Centroids(i,:) = X_train(perm(i),1:n_features);
 end
 
-
-for a=1:10000 %CAMBIAR AQUEST LOOP PER UNA CONDICIÓ DE STOP
+new_Centroids = zeros(n_clusters, n_features);
+iteration=1;
+stop=0;
+while stop~=1 %Stop condition
+    
     %Assign each feature point to a cluster
     for i=1:n_features_train
         diff = X_train(i,1:n_features) - Centroids(1,:);
@@ -72,6 +75,7 @@ for a=1:10000 %CAMBIAR AQUEST LOOP PER UNA CONDICIÓ DE STOP
         end
         d=dist(i,:);
         [mindist(i),Labels(i)]=min(d(:));
+        Labels_orig(i)=X_train(i,4);
     end
     
     %Recalculate Centroids
@@ -83,10 +87,27 @@ for a=1:10000 %CAMBIAR AQUEST LOOP PER UNA CONDICIÓ DE STOP
             new_Centroids(i,:)=sum(X_train2(:,1:n_features))/(n_features_train2(1));      
         end    
     end
-    Centroids = new_Centroids;
+    if (new_Centroids-Centroids==0)
+        stop=1;
+    end
+    Centroids=new_Centroids;
+end
+%_________________________________________________________________________
+figure
+ploter(X_train3, n_clusters,'*',1);
+ploter(new_Centroids, n_clusters,'filled',0);
+
+%Test k-means____________________________________________________________
+Labels_orig = zeros(n_features_test, 1);
+for i=1:n_features_test
+    diff = X_test(i,1:n_features) - Centroids(1,:);
+    dist(i,1) = sqrt(sum(diff * diff'));
+    for j=2:n_clusters
+        diff = X_test(i,1:n_features) - Centroids(j,:);
+        dist(i,j) = sqrt(sum(diff * diff'));
+    end
+    d=dist(i,:);
+    [mindist(i),Labels_test(i)]=min(d(:));
     
 end
 %_________________________________________________________________________
-ploter(X_train3, n_clusters,'*',1);
-ploter(Centroids, n_clusters,'filled',0);
-
