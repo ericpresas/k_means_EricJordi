@@ -85,9 +85,13 @@ minTrace(n_clusters)=trace(inv(T)*W);
 maxTrace(n_clusters)=trace(inv(W)*B);
 J(n_clusters)=sum(W(:));
 %_________________________________________________________________________
-%ploter(X_train2, n_clusters,'*',1);
-%ploter(Centroids, n_clusters,'o',0);
-%ploter(Store_Centroids, n_clusters,'filled',1);
+if (n_clusters==4)
+    %ploter(db_gaussian, n_clusters,'+',1);
+    ploter(X_train2, n_clusters,'*',1);
+    %ploter(Centroids, n_clusters,'o',0);
+    ploter(Store_Centroids, n_clusters,'filled',2);
+end
+%
 clear X_train2 Labels
 
 end

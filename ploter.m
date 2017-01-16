@@ -14,5 +14,13 @@ elseif (method==0)
             scatter3( a(i,1),a(i,2),a(i,3),points)
             hold on
     end  
+elseif(method==2)
+    b= [];
+    for i=1:n
+      b=[ a{i}(:,1), a{i}(:,2), a{i}(:,3)];
+      plot3(b(:,1),b(:,2),b(:,3),'linewidth',10)
+      hold on
+    end
+    
 end
 
