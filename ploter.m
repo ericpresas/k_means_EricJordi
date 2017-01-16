@@ -21,6 +21,12 @@ elseif(method==2)
       plot3(b(:,1),b(:,2),b(:,3),'linewidth',10)
       hold on
     end
+elseif(method==3)
+
+    for i=1:n
+      plot3(a(:,1),a(:,2),a(:,3),'linewidth',10)
+      hold on
+    end
     
 end
 

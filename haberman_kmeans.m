@@ -42,7 +42,7 @@ X_test = zeros(n_features_test,4);
 last_position_train=1;
 last_position_test=1;
 for i=1:n_samples
- if (i <= n_features_train)
+ if (i <= n_samples)
     X_train(i,:)= dataset(i, :);
  else
     X_test(i-n_features_train,:)= dataset(i, :);
@@ -51,6 +51,7 @@ end
 
 %Train k-means____________________________________________________________
 
+for n_clusters=1:10
 %Take the number of vectors of the database
 Centroids = zeros(n_clusters, n_features);
 
@@ -66,7 +67,7 @@ stop=0;
 while stop~=1 %Stop condition
     
     %Assign each feature point to a cluster
-    for i=1:n_features_train
+    for i=1:n_samples
         diff = X_train(i,1:n_features) - Centroids(1,:);
         dist(i,1) = sqrt(sum(diff * diff'));
         for j=2:n_clusters
@@ -82,6 +83,7 @@ while stop~=1 %Stop condition
     for i=1:n_clusters
         if(isempty(find(Labels==i))==0)
             X_train3{i}=X_train(find(Labels==i),:);
+            X_train3_orig{i}=X_train(find(Labels_orig==i),:);
             X_train2=X_train(find(Labels==i),:);
             n_features_train2= size(X_train2);
             new_Centroids(i,:)=sum(X_train2(:,1:n_features))/(n_features_train2(1));      
@@ -93,21 +95,39 @@ while stop~=1 %Stop condition
     Centroids=new_Centroids;
 end
 %_________________________________________________________________________
+if (n_clusters==2)
 figure
 ploter(X_train3, n_clusters,'*',1);
 ploter(new_Centroids, n_clusters,'filled',0);
+hold off
+figure
+ploter(X_train3_orig, n_clusters,'*',1);
+end
+%Traces of scatter matrixes
 
-%Test k-means____________________________________________________________
-Labels_orig = zeros(n_features_test, 1);
-for i=1:n_features_test
-    diff = X_test(i,1:n_features) - Centroids(1,:);
-    dist(i,1) = sqrt(sum(diff * diff'));
-    for j=2:n_clusters
-        diff = X_test(i,1:n_features) - Centroids(j,:);
-        dist(i,j) = sqrt(sum(diff * diff'));
-    end
-    d=dist(i,:);
-    [mindist(i),Labels_test(i)]=min(d(:));
+[B,W]=scattermat(X_train,Labels,n_clusters);
+T=B+W;
+minTrace(n_clusters)=trace(inv(T)*W);
+maxTrace(n_clusters)=trace(inv(W)*B);
+J(n_clusters)=sum(W(:));
+
+%_________________________________________________________________________
+Pe=0;
+labels_orig_train=X_train(:,4)';
+for i=1:n_clusters
+    count_label_test(i)=sum(Labels(Labels==i));
+    verif_count(i)=sum(labels_orig_train(labels_orig_train==i));
     
 end
-%_________________________________________________________________________
+    D = abs(Labels-labels_orig_train).^2;
+    MSE(n_clusters) = sum(D(:))/numel(Labels);
+end
+
+figure('name','Traces Plot')
+plot( minTrace,'blue')
+hold on
+plot( maxTrace,'red')
+hold on
+plot( J, 'green')
+hold on
+plot( MSE, 'magenta')
